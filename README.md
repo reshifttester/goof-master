@@ -1,2 +1,2 @@
 # goof-master
-Vulnerable Javascript code for testing
+Vulnerable Javascript code for testing security
