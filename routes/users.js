@@ -47,6 +47,7 @@ router.post('/', async (req, res, next) => {
 
     var data = jsyaml.load(req.params.data);
     
+    var dataCopy = jsyaml.load(req.params.data);
     const savedRecord = await repo.save(user)
     console.log("Post has been saved: ", savedRecord)
     console.log("Unauthorized access attempt by " + data, data)
