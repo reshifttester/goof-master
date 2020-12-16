@@ -9,7 +9,7 @@ var streamBuffers = require('stream-buffers');
 var readline = require('readline');
 var moment = require('moment');
 var exec = require('child_process').exec;
-var u = 'user';
+
 // zip-slip
 var fileType = require('file-type');
 var AdmZip = require('adm-zip');
@@ -82,12 +82,6 @@ exports.create = function (req, res, next) {
   if (typeof (item) == 'string' && item.match(imgRegex)) {
     var url = item.match(imgRegex)[1];
     console.log('found img: ' + url);
-    exec('identify ' + url, function (err, stdout, stderr) {
-      console.log(err);
-      if (err !== null) {
-        console.log('Error (' + err + '):' + stderr);
-      }
-    });
 
     exec('identify ' + url, function (err, stdout, stderr) {
       console.log(err);

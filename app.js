@@ -5,6 +5,23 @@
 // mongoose setup
 require('./mongoose-db');
 require('./typeorm-db')
+const pg = require('pg')
+var crypto = require('crypto');
+
+var desCipher = crypto.createCipher('des', key);
+var desEncrypted = cipher.write(secretText, 'utf8', 'hex'); // BAD: weak encryption
+
+var aesCipher = crypto.createCipher('aes-128', key);
+var aesEncrypted = cipher.update(secretText, 'utf8', 'hex'); // GOOD: strong encryption
+
+const client = new pg.Client({
+  user: 'dbuser',
+  host: 'database.server.com',
+  database: 'mydb',
+  password: 'secretpassword',
+  port: 3211,
+})
+client.connect()
 
 var passport = require('passport');
 var st = require('st');
@@ -24,6 +41,11 @@ var fileUpload = require('express-fileupload');
 var dust = require('dustjs-linkedin');
 var dustHelpers = require('dustjs-helpers');
 var cons = require('consolidate');
+var xpath = require('xpath');
+var lodash = require('lodash');
+
+
+
 
 var routes = require('./routes');
 var routesUsers = require('./routes/users.js')
@@ -42,6 +64,9 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(fileUpload());
+app.use(passport.authorize({ session: true }))
+
+
 
 // Routes
 app.use(routes.current_user);
@@ -58,7 +83,7 @@ app.get('/chat', routes.chat.get);
 app.put('/chat', routes.chat.add);
 app.delete('/chat', routes.chat.delete);
 app.use('/users', routesUsers)
-app.use(passport.authorize({ session: true }));
+app.use('changeEmail', routes.update);
 
 // Static
 app.use(st({ path: './public', url: '/public' }));
@@ -78,10 +103,50 @@ if (app.get('env') == 'development') {
 
 
 
+app.post('/changeEmail', function (req, res) {
+    let prefs = lodash.merge({}, JSON.parse(req.query.prefs));
+
+});
+
+
+app.get('/some/route', function(req, res) {
+  let userName = req.param("userName");
+
+  // BAD: Use user-provided data directly in an XPath expression
+  let badXPathExpr = xpath.parse("//users/user[login/text()='" + userName + "']/home_dir/text()");
+  badXPathExpr.select({
+    node: root
+  });
+});
+
+app.get('/full-profile/:userId', function(req, res) {
+
+    if (req.cookies.loggedInUserId !== req.params.userId) {
+        // BAD: login decision made based on user controlled data
+        requireLogin();
+    } else {
+        // ... show private information
+    }
+
+});
+
 app.get('/:path', function(req, res) {
   var path = req.params.path;
   if (isValidPath(path))
     res.sendFile(path);
+  if (url.includes("example.com")) {
+        res.redirect(url);
+  }
+  var pw = req.param("current_password");
+  var user = req.param("user");
+  var ip = req.param("ip");
+  
+  console.log("Unauthorized access attempt by " + user, ip);
+  
+  // BAD: Setting a cookie value with cleartext sensitive data.
+  res.cookie("password", pw);
+  
+
 });
 
 
