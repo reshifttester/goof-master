@@ -1,3 +1,4 @@
+// TODO: fix some security issues here
 var utils = require('../utils');
 var mongoose = require('mongoose');
 var Todo = mongoose.model('Todo');
